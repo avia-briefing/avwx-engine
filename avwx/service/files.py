@@ -18,7 +18,6 @@ import httpx
 
 # module
 from avwx.service.base import Service
-from avwx.station import valid_station
 
 
 _TEMP_DIR = tempfile.TemporaryDirectory()

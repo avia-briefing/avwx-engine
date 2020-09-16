@@ -60,3 +60,5 @@ target/
 /.nox
 /notes.txt
 /site
+/venv
+/.idea

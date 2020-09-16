@@ -12,7 +12,6 @@ from avwx.parsing import core, remarks, sanitization, speech, summary
 from avwx.parsing.translate.metar import translate_metar
 from avwx.static.core import FLIGHT_RULES, IN_UNITS, NA_UNITS
 from avwx.static.metar import METAR_RMK
-from avwx.station import uses_na_format, valid_station
 from avwx.structs import MetarData, Number, Units
 
 
@@ -153,41 +152,11 @@ def parse(station: str, report: str, issued: date = None) -> Tuple[MetarData, Un
     """
     Returns MetarData and Units dataclasses with parsed data and their associated units
     """
-    valid_station(station)
+    # valid_station(station)
     if not report:
         return None, None
-    parser = parse_na if uses_na_format(station[:2]) else parse_in
+    parser = parse_in
     return parser(report, issued)
-
-
-def parse_na(report: str, issued: date = None) -> Tuple[MetarData, Units]:
-    """
-    Parser for the North American METAR variant
-    """
-    units = Units(**NA_UNITS)
-    resp = {"raw": report}
-    resp["sanitized"], resp["remarks"], data = sanitize(report)
-    data, resp["station"], resp["time"] = core.get_station_and_time(data)
-    data, resp["runway_visibility"] = get_runway_visibility(data)
-    data, resp["clouds"] = core.get_clouds(data)
-    (
-        data,
-        resp["wind_direction"],
-        resp["wind_speed"],
-        resp["wind_gust"],
-        resp["wind_variable_direction"],
-    ) = core.get_wind(data, units)
-    data, resp["altimeter"] = get_altimeter(data, units, "NA")
-    data, resp["visibility"] = core.get_visibility(data, units)
-    data, resp["temperature"], resp["dewpoint"] = get_temp_and_dew(data)
-    condition = core.get_flight_rules(
-        resp["visibility"], core.get_ceiling(resp["clouds"])
-    )
-    resp["other"], resp["wx_codes"] = get_wx_codes(data)
-    resp["flight_rules"] = FLIGHT_RULES[condition]
-    resp["remarks_info"] = remarks.parse(resp["remarks"])
-    resp["time"] = core.make_timestamp(resp["time"], target_date=issued)
-    return MetarData(**resp), units
 
 
 def parse_in(report: str, issued: date = None) -> Tuple[MetarData, Units]:

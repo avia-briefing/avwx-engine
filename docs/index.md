@@ -41,7 +41,6 @@ These docs could use some love, and I am not a writer. You can help by making a 
 
 ### Utilities
 
-* [Station](util/station.md)
 * [Service](util/service.md)
 * [Other Data Structures](util/structs.md)
 * [Static Values](util/static.md)

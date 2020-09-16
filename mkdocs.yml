@@ -15,7 +15,6 @@ nav:
     - GFS MOS MAV: gfs/mav.md
     - GFS MOS MEX: gfs/mex.md
   - Utilities:
-    - Station: util/station.md
     - Data Services: util/service.md
     - Data Structures: util/structs.md
     - Static Values: util/static.md

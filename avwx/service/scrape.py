@@ -17,7 +17,6 @@ from xmltodict import parse as parsexml
 # module
 from avwx.parsing.core import dedupe
 from avwx.exceptions import InvalidRequest, SourceError
-from avwx.station import valid_station
 from avwx.service.base import Service
 
 
@@ -104,7 +103,6 @@ class ScrapeService(Service):
         """
         Asynchronously fetch a report string from the service
         """
-        valid_station(station)
         url, params = self._make_url(station)
         return await self._fetch(station, url, params, timeout)
 
@@ -357,14 +355,13 @@ class AUBOM(ScrapeService):
 
 
 PREFERRED = {"RK": AMO, "SK": MAC}
-BY_COUNTRY = {"AU": AUBOM}
 
 
-def get_service(station: str, country_code: str) -> Service:
+def get_service(station: str) -> Service:
     """
     Returns the preferred service for a given station
     """
     for prefix in PREFERRED:
         if station.startswith(prefix):
             return PREFERRED[prefix]
-    return BY_COUNTRY.get(country_code, NOAA)
+    return NOAA

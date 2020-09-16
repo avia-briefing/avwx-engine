@@ -9,22 +9,8 @@ from datetime import date, datetime, timezone
 from typing import List, Optional, Union
 
 # module
-from avwx.exceptions import BadStation
 from avwx.service import Service
-from avwx.station import Station
 from avwx.structs import ReportData, Units
-
-
-def find_station(report: str) -> Station:
-    """
-    Returns the first ICAO ident found in a report string
-    """
-    for item in report.split():
-        if len(item) == 4:
-            with suppress(BadStation):
-                return Station.from_icao(item.upper())
-    return None
-
 
 class AVWXBase(metaclass=ABCMeta):
     """
@@ -39,9 +25,6 @@ class AVWXBase(metaclass=ABCMeta):
 
     #: 4-character ICAO station ident code the report was initialized with
     icao: Optional[str] = None
-
-    #: Provide basic station info if given at init
-    station: Optional[Station] = None
 
     #: The original report string. Fetched on update()
     raw: Optional[str] = None
@@ -58,7 +41,6 @@ class AVWXBase(metaclass=ABCMeta):
     def __init__(self, icao: str):
         icao = icao.upper()
         self.icao = icao
-        self.station = Station.from_icao(icao)
 
     def __repr__(self) -> str:
         return f"<avwx.{self.__class__.__name__} icao={self.icao}>"
@@ -68,15 +50,12 @@ class AVWXBase(metaclass=ABCMeta):
         pass
 
     @classmethod
-    def from_report(cls, report: str, issued: date = None) -> "AVWXBase":
+    def from_report(cls, icao: str, report: str, issued: date = None) -> "AVWXBase":
         """
         Returns an updated report object based on an existing report
         """
         report = report.strip()
-        station = find_station(report)
-        if not station:
-            return None
-        obj = cls(station.icao)
+        obj = cls(icao)
         obj.parse(report, issued=issued)
         return obj
 

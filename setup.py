@@ -38,7 +38,7 @@ setup(
     python_requires=">= 3.7",
     install_requires=dependencies,
     packages=find_namespace_packages(include=["avwx*"]),
-    package_data={"avwx.data": ["aircraft.json", "stations.json"]},
+    # package_data={"avwx.data": ["aircraft.json", "stations.json"]},
     tests_require=test_dependencies,
     extras_require=extras,
 )

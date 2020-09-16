@@ -12,7 +12,6 @@ from avwx.parsing import core, sanitization, speech, summary
 from avwx.parsing.translate.taf import translate_taf
 from avwx.static.core import FLIGHT_RULES, IN_UNITS, NA_UNITS
 from avwx.static.taf import TAF_RMK, TAF_NEWLINE, TAF_NEWLINE_STARTSWITH
-from avwx.station import uses_na_format, valid_station
 from avwx.structs import TafData, TafLineData, Timestamp, Units
 
 
@@ -291,7 +290,6 @@ def parse(station: str, report: str, issued: date = None) -> Tuple[TafData, Unit
     """
     if not report:
         return None, None
-    valid_station(station)
     while len(report) > 3 and report[:4] in ("TAF ", "AMD ", "COR "):
         report = report[4:]
     ret = {"end_time": None, "raw": report, "remarks": None, "start_time": None}
@@ -302,12 +300,8 @@ def parse(station: str, report: str, issued: date = None) -> Tuple[TafData, Unit
     report = report.replace(station, "")
     if time:
         report = report.replace(time, "").strip()
-    if uses_na_format(station):
-        use_na = True
-        units = Units(**NA_UNITS)
-    else:
-        use_na = False
-        units = Units(**IN_UNITS)
+    use_na = False
+    units = Units(**IN_UNITS)
     # Find and remove remarks
     report, ret["remarks"] = get_taf_remarks(report)
     # Split and parse each line

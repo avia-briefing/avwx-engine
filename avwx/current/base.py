@@ -63,7 +63,7 @@ class Report(AVWXBase):
 
     def __init__(self, icao: str):
         super().__init__(icao)
-        self.service = get_service(icao, self.station.country)(
+        self.service = get_service(icao)(
             self.__class__.__name__.lower()
         )
 
